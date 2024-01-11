@@ -1,16 +1,3 @@
-/**
- * Created by K. Suwatchai (Mobizt)
- *
- * Email: k_suwatchai@hotmail.com
- *
- * Github: https://github.com/mobizt/Firebase-ESP-Client
- *
- * Copyright (c) 2023 mobizt
- *
- */
-
-/** This example will show how to access the RTDB in Test Mode (no authentication).
- */
 #include <Arduino.h>
 #include <WiFi.h>
 #include <Firebase_ESP_Client.h>
@@ -20,13 +7,13 @@
 #include <addons/TokenHelper.h>
 
 /* 1. Define the WiFi credentials */
-#define WIFI_SSID "BELL545"
-#define WIFI_PASSWORD "ammuyadu916"
+#define WIFI_SSID ""
+#define WIFI_PASSWORD ""
 
 /* 2. Define the RTDB URL */
-#define DATABASE_URL "https://parking-management-syste-7ead5-default-rtdb.firebaseio.com/" //<databaseName>.firebaseio.com or <databaseName>.<region>.firebasedatabase.app
+#define DATABASE_URL "" //<databaseName>.firebaseio.com or <databaseName>.<region>.firebasedatabase.app
 
-#define API_KEY "AIzaSyD7OHTKAEGgTzZJbGEghgwK0zvlyVJeQVE"
+#define API_KEY ""
 
 /* 3. Define the Firebase Data object */
 FirebaseData fbdo;
@@ -43,7 +30,7 @@ bool signupOk = false;
 
 void setup()
 {
-
+    
     Serial.begin(115200);
     WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
 
@@ -104,8 +91,6 @@ void loop()
         Serial.printf("REASON: %s\n", fbdo.errorReason());
       }
       
-    }
-
-    
+    } 
     
 }
