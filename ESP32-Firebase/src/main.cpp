@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include <WiFi.h>
 #include <Firebase_ESP_Client.h>
+#include <iostream>
 
 // Provide the RTDB payload printing info and other helper functions.
 #include <addons/RTDBHelper.h>
@@ -12,9 +13,7 @@
 
 /* 2. Define the RTDB URL */
 #define DATABASE_URL "https://parking-management-syste-7ead5-default-rtdb.firebaseio.com/" //<databaseName>.firebaseio.com or <databaseName>.<region>.firebasedatabase.app
-
 #define API_KEY "AIzaSyD7OHTKAEGgTzZJbGEghgwK0zvlyVJeQVE"
-
 #define LED_PIN 32
 
 /* 3. Define the Firebase Data object */
@@ -30,6 +29,10 @@ unsigned long sendDataPrevMillis = 0;
 int count = 0;
 int ledState = false;
 boolean signupOk = false;
+const int parking_spots = 3;
+std::vector<std::string> parking_spot_variables = {"ledPin", "ledState", "parkingSpotState"}; 
+void initFirebaseDatabase();
+
 
 void setup()
 {
@@ -68,13 +71,60 @@ void setup()
     Firebase.reconnectWiFi(true);
 
     pinMode(LED_PIN, OUTPUT);
+
+
 }
 
-void ledInit() {
+
+void initFirebaseDatabase() {
+  std::string base_parking_spot_db_path = "test/parking_spot_";
   
-  if (Firebase.RTDB.setBool(&fbdo, "test/ledState", ledState)) {
-    Serial.print("Initialized led state to ON\n");
+
+  for (int i; i < parking_spots; ++i) {
+    std::string curr_parking_spot_db_path =  base_parking_spot_db_path.append(std::to_string(i));
+    for (std::string variable: parking_spot_variables) {
+
+      if (Firebase.ready() && signupOk) {
+        
+      }
+    }    
+
+    
+  } 
+}
+
+bool getLedStateFirebase() {
+  if (Firebase.ready() && signupOk) {
+    if (Firebase.RTDB.getBool(&fbdo, "test/ledState")) {
+      Serial.printf("Current led state is: %i\n", fbdo.boolData());
+      return fbdo.boolData();
+    }
+    else {
+      EXIT_FAILURE;
+    }
   }
+}
+
+void initFirebaseDatabase() {
+  std::string base_parking_spot_db_path = "test/parking_spot_";
+  
+
+  for (int i; i < parking_spots; ++i) {
+    std::string curr_parking_spot_db_path =  base_parking_spot_db_path.append(std::to_string(i));
+    
+
+    // if (Firebase.ready() && signupOk) {
+
+        // if (Firebase.RTDB.s(&fbdo, curr_parking_spot_db_path, state)) {
+        //   Serial.printf("Successfully updated LED state to : ");
+        //   Serial.printf("%i\n", );
+        // }
+        // else {
+        //   Serial.printf("Failed to update LED state");
+        //   Serial.printf("REASON: %s\n", fbdo.errorReason());
+        // }
+    // }
+  } 
 }
 
 void setLedState(boolean state) {
@@ -84,7 +134,6 @@ void setLedState(boolean state) {
 
 void updateLedStateFirebase(boolean state) {
     if (Firebase.ready() && signupOk) {
-        sendDataPrevMillis = millis();
 
         if (Firebase.RTDB.setBool(&fbdo, "test/ledState", state)) {
           Serial.printf("Successfully updated LED state to : ");
@@ -112,13 +161,17 @@ bool updateLedState(bool state) {
 
 void loop()
 {
+
   delay(3000);
-  // updateLedStateFirebase(true);
+
+  updateLedStateFirebase(true);
   updateLedState(true);
+  getLedStateFirebase();
+
   delay(3000);
   
-  // updateLedStateFirebase(false);
+  updateLedStateFirebase(false);
   updateLedState(false);
-    
+  getLedStateFirebase();    
     
 }
