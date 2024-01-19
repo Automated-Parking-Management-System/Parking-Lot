@@ -7,13 +7,15 @@
 #include <addons/TokenHelper.h>
 
 /* 1. Define the WiFi credentials */
-#define WIFI_SSID ""
-#define WIFI_PASSWORD ""
+#define WIFI_SSID "Yadii"
+#define WIFI_PASSWORD "gangshit"
 
 /* 2. Define the RTDB URL */
-#define DATABASE_URL "" //<databaseName>.firebaseio.com or <databaseName>.<region>.firebasedatabase.app
+#define DATABASE_URL "https://parking-management-syste-7ead5-default-rtdb.firebaseio.com/" //<databaseName>.firebaseio.com or <databaseName>.<region>.firebasedatabase.app
 
-#define API_KEY ""
+#define API_KEY "AIzaSyD7OHTKAEGgTzZJbGEghgwK0zvlyVJeQVE"
+
+#define LED_PIN 32
 
 /* 3. Define the Firebase Data object */
 FirebaseData fbdo;
@@ -26,7 +28,8 @@ FirebaseConfig config;
 
 unsigned long sendDataPrevMillis = 0;
 int count = 0;
-bool signupOk = false;
+int ledState = false;
+boolean signupOk = false;
 
 void setup()
 {
@@ -63,34 +66,59 @@ void setup()
 
     Firebase.begin(&config, &auth);
     Firebase.reconnectWiFi(true);
+
+    pinMode(LED_PIN, OUTPUT);
+}
+
+void ledInit() {
+  
+  if (Firebase.RTDB.setBool(&fbdo, "test/ledState", ledState)) {
+    Serial.print("Initialized led state to ON\n");
+  }
+}
+
+void setLedState(boolean state) {
+  digitalWrite(LED_PIN, state);
+  delay(100);
+}
+
+void updateLedStateFirebase(boolean state) {
+    if (Firebase.ready() && signupOk) {
+        sendDataPrevMillis = millis();
+
+        if (Firebase.RTDB.setBool(&fbdo, "test/ledState", state)) {
+          Serial.printf("Successfully updated LED state to : ");
+          Serial.printf("%i\n", state);
+        }
+        else {
+          Serial.printf("Failed to update LED state");
+          Serial.printf("REASON: %s\n", fbdo.errorReason());
+        }
+    }
+}
+
+bool updateLedState(bool state) {
+  if (!digitalPinIsValid(LED_PIN)) {
+    Serial.print("Pin is not valid ?");
+    return false;
+  }
+
+  Serial.print("Update led state to: ");
+  Serial.printf("%i\n\n", state);
+  delay(100);
+  digitalWrite(LED_PIN, state);
+  return true;
 }
 
 void loop()
 {
-    if (Firebase.ready() && signupOk && (millis() - sendDataPrevMillis > 15000 || sendDataPrevMillis == 0)) {
-      sendDataPrevMillis = millis();
-
-      if (Firebase.RTDB.setInt(&fbdo, "test/int", count)) {
-        Serial.println("PASSED");
-        Serial.printf("PATH: %s\n", fbdo.dataPath());
-        Serial.printf("TYPE: %s\n", fbdo.dataType());
-      }
-      else {
-        Serial.println("FAILED");
-        Serial.printf("REASON: %s\n", fbdo.errorReason());
-      }
-
-
-      if (Firebase.RTDB.setFloat(&fbdo, "test/float", 0.01 + random(0, 100))) {
-        Serial.println("PASSED");
-        Serial.printf("PATH: %s\n", fbdo.dataPath());
-        Serial.printf("TYPE: %s\n", fbdo.dataType());
-      }
-      else {
-        Serial.println("FAILED");
-        Serial.printf("REASON: %s\n", fbdo.errorReason());
-      }
-      
-    } 
+  delay(3000);
+  // updateLedStateFirebase(true);
+  updateLedState(true);
+  delay(3000);
+  
+  // updateLedStateFirebase(false);
+  updateLedState(false);
+    
     
 }
