@@ -1,4 +1,0 @@
-{
-    "cmake.configureOnOpen": false,
-    "idf.portWin": "COM3"
-}
