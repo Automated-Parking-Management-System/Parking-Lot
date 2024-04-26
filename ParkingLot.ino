@@ -72,18 +72,18 @@ const int LOADCELL_DOUT_PIN_4 = 14;
 const int LOADCELL_SCK_PIN_4 = 12;
 
 // LED Boards
-const int LED_BOARD_1 = 25;
-const int LED_BOARD_2 = 26;
-const int LED_BOARD_3 = 27;
-const int LED_BOARD_4 = 33;
+const int LED_1 = 25;
+const int LED_2 = 26;
+const int LED_3 = 0;
+const int LED_4 = 21;
 
 // Calibration factors
-const int WS1_FACTOR = 1936;
-const int WS2_FACTOR = 1876;
-const int WS3_FACTOR = 1887;
-const int WS4_FACTOR = 1896;
+const int WS1_FACTOR = 2377;
+const int WS2_FACTOR = 2306;
+const int WS3_FACTOR = 2329;
+const int WS4_FACTOR = 2309;
 
-const int CAR_WEIGHT = 99;
+const int CAR_WEIGHT = 79;
 
 // HX711 scale init
 HX711 scale1;
@@ -167,10 +167,10 @@ void setup() {
   /******************************* Setting up Weight Sensors *****************************/
 
   // LED boards initiatlization
-  pinMode(LED_BOARD_1, OUTPUT);
-  pinMode(LED_BOARD_2, OUTPUT);
-  pinMode(LED_BOARD_3, OUTPUT);
-  pinMode(LED_BOARD_4, OUTPUT);
+  pinMode(LED_1, OUTPUT);
+  pinMode(LED_2, OUTPUT);
+  pinMode(LED_3, OUTPUT);
+  pinMode(LED_4, OUTPUT);
 
   rtc_cpu_freq_config_t rtc_config;
   rtc_clk_cpu_freq_get_config(&rtc_config);
@@ -274,34 +274,34 @@ void updateAuthState() {
 void updateWeight() {
   if (scale1.get_units() > CAR_WEIGHT) {
     ws1 = true;
-    digitalWrite(LED_BOARD_1, HIGH);
+    digitalWrite(LED_1, HIGH);
   } else {
     ws1 = false;
-    digitalWrite(LED_BOARD_1, LOW);
+    digitalWrite(LED_1, LOW);
   }
   
   if (scale2.get_units() > CAR_WEIGHT) {
     ws2 = true;
-    digitalWrite(LED_BOARD_2, HIGH);
+    digitalWrite(LED_2, HIGH);
   } else {
     ws2 = false;
-    digitalWrite(LED_BOARD_2, LOW);
+    digitalWrite(LED_2, LOW);
   }
 
   if (scale3.get_units() > CAR_WEIGHT) {
     ws3 = true;
-    digitalWrite(LED_BOARD_3, HIGH);
+    digitalWrite(LED_3, HIGH);
   } else {
     ws3 = false;
-    digitalWrite(LED_BOARD_3, LOW);
+    digitalWrite(LED_3, LOW);
   }
 
   if (scale4.get_units() > CAR_WEIGHT) {
     ws4 = true;
-    digitalWrite(LED_BOARD_4, HIGH);
+    digitalWrite(LED_4, HIGH);
   } else {
     ws4 = false;
-    digitalWrite(LED_BOARD_4, LOW);
+    digitalWrite(LED_4, LOW);
   }
 }
 
