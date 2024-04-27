@@ -31,13 +31,16 @@
 #define USER_EMAIL "navidrahman5@gmail.com"
 #define USER_PASSWORD "vrselbhdbbfclsro"
 
+String UID = "JdeQsCeNA1T3ZQaUtQhcHGf1s343";
+
 /******************** Firebase variables ********************/
 // Define Firebase objects
 FirebaseData fbdo;
 FirebaseAuth auth;
 FirebaseConfig config;
 
-String uid;
+// String uid;
+bool signupOK = false;
 
 unsigned long sendDataPrevMillis = 0;
 unsigned long timerDelay = 15000;
@@ -190,11 +193,19 @@ void setup() {
   /* Assign the RTDB URL (required) */
   config.database_url = DATABASE_URL;
 
-  // Assign the user sign in credentials
-  auth.user.email = USER_EMAIL;
-  auth.user.password = USER_PASSWORD;
+  // // Assign the user sign in credentials
+  // auth.user.email = USER_EMAIL;
+  // auth.user.password = USER_PASSWORD;
 
-  Firebase.reconnectNetwork(true);
+  /* Sign up */
+  if (Firebase.signUp(&config, &auth, "", "")){
+    Serial.println("ok");
+    signupOK = true;
+  }
+  else{
+    Serial.printf("%s\n", config.signer.signupError.message.c_str());
+  }
+
   fbdo.setResponseSize(4096);
 
   // Assign the callback function for the long running token generation task
@@ -205,22 +216,23 @@ void setup() {
 
   // Initialize the library with the Firebase authen and config
   Firebase.begin(&config, &auth);
+  Firebase.reconnectNetwork(true);
 
   // Getting the user UID might take a few seconds
-  Serial.println("Getting User UID");
-  while ((auth.token.uid) == "") {
-    Serial.print('.');
-    delay(1000);
-  }
-  // Print user UID
-  uid = auth.token.uid.c_str();
-  Serial.print("User UID: ");
-  Serial.println(uid);
+  // Serial.println("Getting User UID");
+  // while ((auth.token.uid) == "") {
+  //   Serial.print('.');
+  //   delay(1000);
+  // }
+  // // Print user UID
+  // uid = auth.token.uid.c_str();
+  // Serial.print("User UID: ");
+  // Serial.println(uid);
 
   // Update paths
-  spotsPath = "/" + uid + "/spots";
-  entrancePath = "/" + uid + "/entranceAuth";
-  exitPath = "/" + uid + "/exitAuth";
+  spotsPath = "/" + UID + "/spots";
+  entrancePath = "/" + UID + "/entranceAuth";
+  exitPath = "/" + UID + "/exitAuth";
   sendBool(entrancePath, false);
   sendBool(exitPath, false);
 }
@@ -259,12 +271,12 @@ void closeExit() {
 
 void updateAuthState() {
 
-  if (Firebase.ready()) {
+  if (Firebase.ready() && signupOK) {
     if (Firebase.RTDB.getBool(&fbdo, entrancePath)) {
       entranceAuth = fbdo.boolData();
     }
   }
-  if (Firebase.ready()) {
+  if (Firebase.ready() && signupOK) {
     if (Firebase.RTDB.getBool(&fbdo, exitPath)) {
       exitAuth = fbdo.boolData();
     }
@@ -343,7 +355,7 @@ void loop() {
     Serial.println("Refresh token");
   }
 
-  if (Firebase.ready() && (millis() - sendDataPrevMillis > timerDelay || sendDataPrevMillis == 0)){
+  if (Firebase.ready() && signupOK && (millis() - sendDataPrevMillis > timerDelay || sendDataPrevMillis == 0)){
     sendDataPrevMillis = millis();
     
     sendBool(spotsPath + "/ws1", ws1);
