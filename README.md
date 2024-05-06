@@ -1,2 +1,1 @@
-# ESP32
-Parking Lot ESP32 code
+# Parking Lot ESP32 code
