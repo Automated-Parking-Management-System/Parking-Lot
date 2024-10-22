@@ -1,4 +1,4 @@
-# Parking Lot ESP32 code
+# ESP32 Parking Lot Code
 
 This project is an **Automated Parking Management System** that utilizes **Firebase** for real-time database (RTDB) operations, weight sensors to detect parking spots occupancy, and servos to control gate operations for entry and exit of vehicles. The system authenticates users through Firebase and manages the state of the parking lot gates and spot occupancy.
 
